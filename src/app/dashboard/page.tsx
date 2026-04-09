@@ -3,17 +3,15 @@
 import * as React from "react"
 import { 
   DollarSign, 
-  Users, 
-  ShoppingBag, 
   ArrowUpRight, 
   ArrowDownRight,
   TrendingUp,
-  Package,
-  Clock,
   MessageCircle,
   AlertTriangle,
   Plus,
-  Loader2
+  Loader2,
+  ShoppingBag,
+  Users
 } from "lucide-react"
 import { 
   AreaChart, 
@@ -27,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn, formatCurrency } from "@/lib/utils"
 import { useTranslation } from "@/hooks/use-translation"
 import { createClient } from "@/lib/supabase/client"
@@ -115,7 +113,7 @@ export default function DashboardOverview() {
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight flex items-center gap-3">
              Tableau de Bord <Badge variant="secondary" className="font-bold bg-violet-100 text-violet-700">Vendor Pro</Badge>
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium italic">Aujourd'hui, {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1 font-medium italic">Aujourd&apos;hui, {new Date().toLocaleDateString(&apos;fr-FR&apos;, { weekday: &apos;long&apos;, day: &apos;numeric&apos;, month: &apos;long&apos; })}</p>
         </div>
         <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-3">
           <Button variant="premium" className="rounded-xl font-bold h-12 px-6 shadow-xl shadow-primary/20" onClick={() => window.location.href='/dashboard/products'}>

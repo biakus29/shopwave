@@ -108,10 +108,10 @@ export default function ShopCatalogPage() {
             <Info size={40} />
           </div>
           <h1 className="text-2xl font-black mb-2">Boutique introuvable</h1>
-          <p className="text-muted-foreground font-medium mb-8">Le lien que vous avez suivi est peut-être incorrect ou la boutique n'a pas encore été enregistrée.</p>
+          <p className="text-muted-foreground font-medium mb-8">Le lien que vous avez suivi est peut-être incorrect ou la boutique n&apos;a pas encore été enregistrée.</p>
           <div className="flex gap-4">
-            <Button variant="premium" className="rounded-xl px-8 h-12 font-bold" onClick={() => window.location.href = '/'}>
-                Retour à l'accueil
+            <Button variant="premium" className="rounded-xl px-8 h-12 font-bold" onClick={() => window.location.href = &apos;/&apos;}>
+                Retour à l&apos;accueil
             </Button>
             <Button variant="outline" className="rounded-xl px-8 h-12 font-bold" onClick={() => window.location.reload()}>
                 Réessayer

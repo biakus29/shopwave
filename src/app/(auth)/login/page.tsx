@@ -51,13 +51,13 @@ export default function LoginPage() {
             Sign in with Google
           </Button>
           <p className="text-[11px] text-center text-muted-foreground w-4/5 mx-auto">
-            By signing in, you agree to ShopWave's Vendor Terms of Service and Privacy Policy.
+            By signing in, you agree to ShopWave&apos;s Vendor Terms of Service and Privacy Policy.
           </p>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-4 border-t py-6 bg-slate-50/50 rounded-b-3xl">
         <p className="text-sm font-medium">
-          Don't have a shop?{" "}
+          Don&apos;t have a shop?{" "}
           <Link href="/signup" className="font-bold text-primary hover:underline">
             Apply to be a Vendor
           </Link>

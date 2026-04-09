@@ -5,7 +5,6 @@ import Link from "next/link"
 import { AlertCircle, Chrome, Globe, Store, ArrowRight, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { loginWithGoogle } from "@/lib/firebase/auth"
 
@@ -164,7 +163,7 @@ export default function SignupPage() {
                 <CheckCircle2 size={16} /> <span>Shop details saved locally</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Your shop <strong>"{shopInfo.shopName}"</strong> will be created automatically once you sign in.
+                Your shop <strong>&quot;{shopInfo.shopName}&quot;</strong> will be created automatically once you sign in.
               </p>
             </div>
 
