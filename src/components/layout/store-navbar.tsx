@@ -6,8 +6,10 @@ import { ShoppingBag, Search, ShoppingCart, Menu, X, User, ChevronRight } from "
 import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/store/cart"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/hooks/use-translation"
 
 export function StoreNavbar() {
+  const { t, language } = useTranslation()
   const [isScrolled, setIsScrolled] = React.useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
@@ -60,7 +62,7 @@ export function StoreNavbar() {
             </div>
             <input 
               type="text" 
-              placeholder="Search for products, brands and more..." 
+              placeholder={language === 'fr' ? "Rechercher des produits, marques..." : "Search for products, brands..."}
               className="w-full bg-slate-100 border-none rounded-2xl h-11 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none"
             />
           </div>
@@ -167,11 +169,9 @@ export function StoreNavbar() {
         <nav className="flex-1 overflow-y-auto py-4">
           <div className="space-y-1 px-3">
             {[
-              { label: "Home", href: "/" },
-              { label: "Shop All", href: "/store" },
+              { label: language === 'fr' ? "Accueil" : "Home", href: "/" },
+              { label: language === 'fr' ? "Toutes les Boutiques" : "All Shops", href: "/store" },
               { label: "Categories", href: "/store?categories" },
-              { label: "New Arrivals", href: "/store?new" },
-              { label: "Best Sellers", href: "/store?popular" },
             ].map((item) => (
               <Link
                 key={item.href}
@@ -193,7 +193,7 @@ export function StoreNavbar() {
               className="flex items-center justify-between px-4 py-3.5 rounded-xl text-base font-semibold text-foreground hover:bg-slate-50 active:bg-slate-100 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              My Account
+              {language === 'fr' ? "Mon Compte" : "My Account"}
               <User size={18} className="text-muted-foreground" />
             </Link>
             <Link
@@ -202,7 +202,7 @@ export function StoreNavbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <span className="flex items-center gap-2">
-                Shopping Bag
+                {language === 'fr' ? "Panier" : "Shopping Bag"}
                 {cartCount > 0 && (
                   <span className="w-5 h-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center">
                     {cartCount}
@@ -218,7 +218,7 @@ export function StoreNavbar() {
         <div className="p-4 border-t bg-slate-50/80">
           <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
             <Button variant="premium" className="w-full h-12 rounded-xl text-base shadow-lg shadow-primary/20">
-              Get Started
+              {language === 'fr' ? "Démarrer" : "Get Started"}
             </Button>
           </Link>
         </div>

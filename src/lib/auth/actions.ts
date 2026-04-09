@@ -81,6 +81,68 @@ export async function signIn(formData: { email: string; password: string }) {
   }
 }
 
+export async function signInWithGoogle(role: "vendor" | "customer") {
+  const supabase = createClient();
+  
+  // Get redirect URL based on environment
+  const origin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${origin}/auth/callback?role=${role}`,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'select_account',
+      },
+    },
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  if (data.url) {
+    redirect(data.url);
+  }
+}
+
+export async function signInWithPhone(phone: string) {
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.signInWithOtp({
+    phone,
+    options: {
+      data: {
+        role: "customer", // Customers use phone
+      }
+    }
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function verifyOTP(phone: string, token: string) {
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.verifyOtp({
+    phone,
+    token,
+    type: "sms",
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/store");
+}
+
 export async function signOut() {
   const supabase = createClient();
   await supabase.auth.signOut();

@@ -27,20 +27,23 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refresh session — do not add any logic between createServerClient and getUser
-  const { data: { user } } = await supabase.auth.getUser();
+  // Note: We are transitioning to Firebase, so Supabase Auth session will be empty.
+  // const { data: { user } } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
 
-  // Protect /dashboard/* — redirect to login if no session
+  // Protect /dashboard/* — we'll handle this client-side for now with Firebase
+  /*
   if (!user && pathname.startsWith("/dashboard")) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
+  */
 
   // If authenticated user hits /login or /signup, redirect based on role
+  /*
   if (user && (pathname === "/login" || pathname === "/signup")) {
-    // Fetch role from profiles table
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -51,6 +54,7 @@ export async function updateSession(request: NextRequest) {
     url.pathname = profile?.role === "vendor" ? "/dashboard" : "/store";
     return NextResponse.redirect(url);
   }
+  */
 
   return supabaseResponse;
 }

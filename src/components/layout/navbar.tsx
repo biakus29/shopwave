@@ -7,38 +7,20 @@ import { Menu, X, ShoppingBag, User, LogOut, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useCartStore } from "@/store/cart"
-import { createClient } from "@/lib/supabase/client"
-import { signOut } from "@/lib/auth/actions"
+import { logout } from "@/lib/firebase/auth"
+import { useAuthStore } from "@/store/auth"
+import { useTranslation } from "@/hooks/use-translation"
+import { LanguageSwitcher } from "./language-switcher"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = React.useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
-  const [user, setUser] = React.useState<SupabaseUser | null>(null)
-  const [role, setRole] = React.useState<string | null>(null)
+  const { user, profile } = useAuthStore()
+  const role = profile?.role ?? null
   const pathname = usePathname()
-  const getItemCount = useCartStore((state) => state.getItemCount)
-  const cartCount = getItemCount()
-  const supabase = createClient()
-
-  React.useEffect(() => {
-    // Get initial session
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-      if (user) {
-        supabase.from("profiles").select("role").eq("id", user.id).single()
-          .then(({ data }) => setRole(data?.role ?? null))
-      }
-    })
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      if (!session?.user) setRole(null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
+  const cartCount = useCartStore((state) => state.getItemCount())
+  const { t } = useTranslation()
 
   React.useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -72,12 +54,16 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/#features" className="text-sm font-medium hover:text-primary transition-colors">Features</Link>
-            <Link href="/#pricing" className="text-sm font-medium hover:text-primary transition-colors">Pricing</Link>
-            <Link href="/#faq" className="text-sm font-medium hover:text-primary transition-colors">FAQ</Link>
+            <Link href="/#features" className="text-sm font-medium hover:text-primary transition-colors">{t('common.features')}</Link>
+            <Link href="/#pricing" className="text-sm font-medium hover:text-primary transition-colors">{t('common.tarifs') || t('common.pricing')}</Link>
+            <Link href="/#faq" className="text-sm font-medium hover:text-primary transition-colors">{t('common.faq')}</Link>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
+
             <Link href="/cart" className="relative p-2.5 hover:bg-slate-100/50 rounded-full transition-colors active:scale-95">
               <ShoppingBag size={22} className={cn(isScrolled ? "text-foreground" : "text-foreground sm:text-foreground")} />
               {cartCount > 0 && (
@@ -92,20 +78,18 @@ export function Navbar() {
                 <Link href={role === "vendor" ? "/dashboard" : "/store"}>
                   <Button variant="premium" size="sm" className="gap-2 rounded-xl">
                     <User size={16} />
-                    {role === "vendor" ? "Dashboard" : "My Account"}
+                    {role === "vendor" ? t('common.dashboard') : t('common.myAccount')}
                   </Button>
                 </Link>
-                <form action={signOut}>
-                  <button type="submit" className="p-2 text-muted-foreground hover:text-rose-500 transition-colors" title="Sign out">
-                    <LogOut size={18} />
-                  </button>
-                </form>
+                <button onClick={async () => { await logout(); window.location.href = '/login'; }} className="p-2 text-muted-foreground hover:text-rose-500 transition-colors" title={t('common.logout')}>
+                  <LogOut size={18} />
+                </button>
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-4">
-                <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">Login</Link>
+                <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">{t('common.login')}</Link>
                 <Link href="/signup">
-                  <Button variant="premium" size="sm" className="rounded-xl px-6">Get Started</Button>
+                  <Button variant="premium" size="sm" className="rounded-xl px-6">{t('common.signup')}</Button>
                 </Link>
               </div>
             )}
@@ -143,21 +127,24 @@ export function Navbar() {
             </div>
             <span className="text-lg font-black tracking-tight">ShopWave</span>
           </Link>
-          <button
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="p-2 -mr-2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
-          >
-            <X size={22} />
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 -mr-2 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+            >
+              <X size={22} />
+            </button>
+          </div>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4">
           <div className="space-y-1 px-3">
             {[
-              { label: "Features", href: "/#features" },
-              { label: "Pricing", href: "/#pricing" },
-              { label: "FAQ", href: "/#faq" },
-              { label: "Browse Store", href: "/store" },
+              { label: t('common.features'), href: "/#features" },
+              { label: t('common.tarifs') || t('common.pricing'), href: "/#pricing" },
+              { label: t('common.faq'), href: "/#faq" },
+              { label: t('common.browseStore'), href: "/store" },
             ].map((item) => (
               <Link
                 key={item.href}
@@ -181,29 +168,27 @@ export function Navbar() {
                   className="flex items-center justify-between px-4 py-3.5 rounded-xl text-base font-bold text-primary hover:bg-primary/5 active:bg-primary/10 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  {role === "vendor" ? "Vendor Dashboard" : "My Account"}
+                  {role === "vendor" ? t('common.dashboard') : t('common.myAccount')}
                   <User size={18} />
                 </Link>
-                <form action={signOut}>
-                  <button 
-                    type="submit" 
-                    className="flex items-center justify-between w-full px-4 py-3.5 rounded-xl text-base font-semibold text-rose-500 hover:bg-rose-50 active:bg-rose-100 transition-colors"
-                  >
-                    Sign Out
-                    <LogOut size={18} />
-                  </button>
-                </form>
+                <button 
+                  onClick={async () => { await logout(); window.location.href = '/login'; }} 
+                  className="flex items-center justify-between w-full px-4 py-3.5 rounded-xl text-base font-semibold text-rose-500 hover:bg-rose-50 active:bg-rose-100 transition-colors"
+                >
+                  {t('common.logout')}
+                  <LogOut size={18} />
+                </button>
               </>
             ) : (
               <div className="grid grid-cols-1 gap-3 px-3 pt-2">
                 <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full h-12 rounded-xl font-bold border-2">
-                    Login
+                    {t('common.login')}
                   </Button>
                 </Link>
                 <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="premium" className="w-full h-12 rounded-xl font-bold shadow-lg shadow-primary/20">
-                    Get Started
+                    {t('common.signup')}
                   </Button>
                 </Link>
               </div>

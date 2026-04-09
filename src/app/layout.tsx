@@ -19,6 +19,8 @@ export const viewport = {
   themeColor: '#8b5cf6',
 }
 
+import { FirebaseAuthProvider } from "@/components/providers/firebase-auth-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} antialiased selection:bg-primary/20 selection:text-primary font-sans`}>
-        {children}
+        <FirebaseAuthProvider>
+          {children}
+        </FirebaseAuthProvider>
       </body>
     </html>
   );

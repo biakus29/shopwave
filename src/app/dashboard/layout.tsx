@@ -1,43 +1,47 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
-import DashboardLayoutClient from "./layout-client"
+"use client";
 
-export default async function DashboardLayout({
+import { redirect, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import DashboardLayoutClient from "./layout-client";
+import { useAuthStore } from "@/store/auth";
+
+export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const supabase = createClient()
+  const { user, profile, loading } = useAuthStore();
+  const router = useRouter();
 
-  // Get authenticated user (secure - uses server-side session)
-  const { data: { user }, error } = await supabase.auth.getUser()
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        router.push("/login");
+      } else if (profile?.role === "customer") {
+        router.push("/store");
+      }
+    }
+  }, [user, profile, loading, router]);
 
-  if (error || !user) {
-    redirect("/login")
-  }
-
-  // Fetch profile with role
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single()
-
-  // Only vendors can access the dashboard
-  if (profile?.role === "customer") {
-    redirect("/store")
+  // Optionally show a loading screen while evaluating auth state
+  if (loading || !user || !profile) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-50">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
   }
 
   return (
     <DashboardLayoutClient
       user={{
-        id: user.id,
+        id: user.uid,
         email: user.email ?? "",
-        full_name: profile?.full_name ?? user.email ?? "User",
-        role: profile?.role ?? "vendor",
+        full_name: profile.full_name ?? user.email ?? "User",
+        role: profile.role ?? "vendor",
       }}
     >
       {children}
     </DashboardLayoutClient>
-  )
+  );
 }

@@ -78,10 +78,10 @@ CREATE POLICY "Public profiles are viewable by everyone" ON profiles FOR SELECT 
 CREATE POLICY "Users can update their own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 
 CREATE POLICY "Shops are viewable by everyone" ON shops FOR SELECT USING (true);
-CREATE POLICY "Vendors can manage their own shop" ON shops ALL USING (auth.uid() = vendor_id);
+CREATE POLICY "Vendors can manage their own shop" ON shops FOR ALL USING (auth.uid() = vendor_id);
 
 CREATE POLICY "Products are viewable by everyone" ON products FOR SELECT USING (true);
-CREATE POLICY "Vendors can manage products of their own shop" ON products ALL USING (
+CREATE POLICY "Vendors can manage products of their own shop" ON products FOR ALL USING (
   EXISTS (SELECT 1 FROM shops WHERE id = products.shop_id AND vendor_id = auth.uid())
 );
 
