@@ -1,26 +1,20 @@
 "use client"
 
+export const dynamic = "force-dynamic"
+
 import * as React from "react"
 import { 
   Plus, 
   Search, 
-  Filter, 
-  MoreVertical, 
   Pencil, 
   Trash2, 
-  Image as ImageIcon,
-  AlertCircle,
-  CheckCircle2,
-  Package,
-  TrendingUp,
-  LayoutGrid,
-  Archive,
-  Banknote,
-  Upload,
-  X,
-  Loader2,
-  Settings2,
-  Tags,
+  AlertCircle, 
+  CheckCircle2, 
+  Package, 
+  TrendingUp, 
+  Upload, 
+  X, 
+  Loader2, 
   ChevronRight
 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
@@ -35,11 +29,9 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription,
-  DialogFooter,
   DialogClose
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { 
   Select, 
   SelectContent, 
@@ -53,17 +45,30 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 const CATEGORIES = ["Technology", "Fashion", "Home & Decor", "Beauty", "Sports", "Other"]
 
+interface Product {
+  id: string
+  name: string
+  category: string
+  price: number
+  purchase_cost: number
+  stock_quantity: number
+  low_stock_threshold: number
+  status: string
+  images: string[]
+  description?: string
+}
+
 export default function ProductsPage() {
   const { user } = useAuthStore()
   const supabase = createClient()
   
-  const [products, setProducts] = React.useState<any[]>([])
+  const [products, setProducts] = React.useState<Product[]>([])
   const [shopId, setShopId] = React.useState<string | null>(null)
   const [isLoading, setIsLoading] = React.useState(true)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
-  const [editingProduct, setEditingProduct] = React.useState<any>(null)
+  const [editingProduct, setEditingProduct] = React.useState<Product | null>(null)
   
   const [formData, setFormData] = React.useState({
     name: "",
@@ -74,12 +79,11 @@ export default function ProductsPage() {
     stock_quantity: "",
     low_stock_threshold: "10",
     status: "active",
-    images: "",
-    attributes: [] as { name: string, values: string[] }[]
+    images: ""
   })
 
   const fetchProducts = React.useCallback(async (sId: string) => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("products")
       .select("*")
       .eq("shop_id", sId)
@@ -129,13 +133,12 @@ export default function ProductsPage() {
       stock_quantity: "",
       low_stock_threshold: "10",
       status: "active",
-      images: "",
-      attributes: []
+      images: ""
     })
     setIsCreateModalOpen(true)
   }
 
-  const handleOpenEdit = (product: any) => {
+  const handleOpenEdit = (product: Product) => {
     setEditingProduct(product)
     setFormData({
       name: product.name,
@@ -146,8 +149,7 @@ export default function ProductsPage() {
       stock_quantity: product.stock_quantity.toString(),
       low_stock_threshold: (product.low_stock_threshold || 10).toString(),
       status: product.status,
-      images: (product.images || []).join(", "),
-      attributes: product.attributes || []
+      images: (product.images || []).join(", ")
     })
     setIsEditModalOpen(true)
   }
@@ -156,7 +158,7 @@ export default function ProductsPage() {
     e.preventDefault()
     if (!shopId) return
 
-    const productData: any = {
+    const productData = {
       shop_id: shopId,
       name: formData.name,
       slug: formData.name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
@@ -169,7 +171,7 @@ export default function ProductsPage() {
       status: formData.status,
       is_active: formData.status === "active",
       images: formData.images.split(",").map(s => s.trim()).filter(s => s !== ""),
-      attributes: formData.attributes,
+      attributes: [] // Reserved for future use
     }
 
     try {
@@ -191,8 +193,8 @@ export default function ProductsPage() {
         fetchProducts(shopId)
         setIsCreateModalOpen(false)
       }
-    } catch (err: any) {
-      alert("Erreur: " + err.message)
+    } catch (err: unknown) {
+      if (err instanceof Error) alert("Erreur: " + err.message)
     }
   }
 
@@ -256,7 +258,7 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* Stats Quick View - Improved Mobile View */}
+      {/* Stats Quick View */}
       <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar -mx-1 px-1 snap-x">
          <div className="snap-center shrink-0 w-44">
            <StatItem title="Vente Potentielle" value={formatCurrency(products.reduce((acc, p) => acc + (p.price * p.stock_quantity), 0))} icon={<TrendingUp className="text-emerald-500" />} />
@@ -269,7 +271,7 @@ export default function ProductsPage() {
          </div>
       </div>
 
-      {/* Search Bar - Full Width on Mobile */}
+      {/* Search Bar */}
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
         <Input 
@@ -280,7 +282,7 @@ export default function ProductsPage() {
         />
       </div>
 
-      {/* Product Grid - Vertical Cards on Mobile */}
+      {/* Product Grid */}
       <div className="space-y-4">
         {filteredProducts.map((product) => {
           const profit = product.price - (product.purchase_cost || 0);
@@ -290,7 +292,6 @@ export default function ProductsPage() {
           return (
             <Card key={product.id} className="border-none shadow-xl shadow-slate-200/40 rounded-[28px] overflow-hidden group active:scale-[0.98] transition-all">
               <div className="flex p-3 gap-3">
-                {/* Image Container */}
                 <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden shrink-0 shadow-inner relative">
                   {product.images?.[0] ? (
                       <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
@@ -306,7 +307,6 @@ export default function ProductsPage() {
                   )}
                 </div>
 
-                {/* Details Container */}
                 <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                   <div className="space-y-0.5">
                     <div className="flex items-center justify-between gap-2">
@@ -375,7 +375,6 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* Floating Action Button (Mobile Only) */}
       <div className="fixed bottom-24 right-4 z-50 md:hidden">
         <Button 
            className="w-16 h-16 rounded-[24px] shadow-2xl bg-primary text-white p-0 flex items-center justify-center animate-bounce hover:animate-none"
@@ -414,34 +413,15 @@ function StatItem({ title, value, icon }: { title: string, value: string, icon: 
   )
 }
 
-function ProductModal({ isOpen, onClose, formData, setFormData, onSave, isEdit }: any) {
+function ProductModal({ isOpen, onClose, formData, setFormData, onSave, isEdit }: { 
+  isOpen: boolean, 
+  onClose: () => void, 
+  formData: any, 
+  setFormData: (data: any) => void, 
+  onSave: (e: React.FormEvent) => void,
+  isEdit: boolean
+}) {
   const [isUploading, setIsUploading] = React.useState(false)
-  const supabase = createClient()
-
-  const addAttribute = () => {
-    setFormData({
-      ...formData,
-      attributes: [...formData.attributes, { name: "", values: [] }]
-    })
-  }
-
-  const updateAttributeName = (index: number, name: string) => {
-    const newAttributes = [...formData.attributes]
-    newAttributes[index].name = name
-    setFormData({ ...formData, attributes: newAttributes })
-  }
-
-  const updateAttributeValues = (index: number, valueStr: string) => {
-    const newAttributes = [...formData.attributes]
-    newAttributes[index].values = valueStr.split(",").map(s => s.trim()).filter(s => s !== "")
-    setFormData({ ...formData, attributes: newAttributes })
-  }
-
-  const removeAttribute = (index: number) => {
-    const newAttributes = [...formData.attributes]
-    newAttributes.splice(index, 1)
-    setFormData({ ...formData, attributes: newAttributes })
-  }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -460,8 +440,8 @@ function ProductModal({ isOpen, onClose, formData, setFormData, onSave, isEdit }
         ...formData,
         images: [...currentImages, publicUrl].join(", ")
       })
-    } catch (error: any) {
-      alert("Erreur: " + error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) alert("Erreur: " + error.message)
     } finally {
       setIsUploading(false)
     }
@@ -493,7 +473,6 @@ function ProductModal({ isOpen, onClose, formData, setFormData, onSave, isEdit }
           </DialogHeader>
           
           <div className="p-6 space-y-8 flex-1">
-            {/* Essential Info */}
             <div className="space-y-4">
                <div className="grid grid-cols-1 gap-5">
                   <div className="space-y-2">
@@ -536,7 +515,6 @@ function ProductModal({ isOpen, onClose, formData, setFormData, onSave, isEdit }
                </div>
             </div>
 
-            {/* Price & Inventory */}
             <div className="grid grid-cols-2 gap-4 bg-slate-50 p-6 rounded-[32px]">
                <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-emerald-600 pl-1">Prix de vente</Label>
@@ -560,7 +538,6 @@ function ProductModal({ isOpen, onClose, formData, setFormData, onSave, isEdit }
                </div>
             </div>
 
-            {/* Images - Instagram Style */}
             <div className="space-y-4">
                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Galerie Photos</Label>
                <div className="grid grid-cols-3 gap-3">
