@@ -2,19 +2,15 @@
 
 import * as React from "react"
 import { 
-  BarChart, 
-  Bar, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  LineChart,
-  Line,
   AreaChart,
   Area
 } from "recharts"
-import { Calendar, Download, TrendingUp, Users, ShoppingBag, Target } from "lucide-react"
+import { Calendar, Download, Users, ShoppingBag, Target } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"

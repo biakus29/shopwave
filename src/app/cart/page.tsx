@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, ShieldCheck, Truck } from "lucide-react"
 import { useCartStore } from "@/store/cart"
-import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, getTotal } = useCartStore()
@@ -43,8 +43,13 @@ export default function CartPage() {
                 {items.map((item) => (
                   <Card key={item.product.id} className="border-none shadow-lg sm:shadow-xl shadow-slate-200/50 overflow-hidden">
                     <CardContent className="p-0 flex flex-row">
-                      <div className="w-24 sm:w-48 aspect-square bg-slate-100 overflow-hidden shrink-0">
-                        <img src={item.product.images?.[0] || 'https://picsum.photos/seed/p1/200'} alt={item.product.name} className="w-full h-full object-cover" />
+                      <div className="w-24 sm:w-48 aspect-square bg-slate-100 relative overflow-hidden shrink-0">
+                        <Image 
+                          src={item.product.images?.[0] || 'https://picsum.photos/seed/p1/200'} 
+                          alt={item.product.name} 
+                          fill 
+                          className="object-cover" 
+                        />
                       </div>
                       <div className="flex-1 p-4 sm:p-6 flex flex-col justify-between min-w-0">
                         <div className="flex justify-between gap-3 sm:gap-4">

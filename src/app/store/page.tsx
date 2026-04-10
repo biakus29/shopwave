@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = "force-dynamic"
+
 import * as React from "react"
 import Link from "next/link"
 import { StoreNavbar } from "@/components/layout/store-navbar"
@@ -10,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { ShoppingCart, Heart, Star, ArrowRight, Filter, ChevronDown } from "lucide-react"
 import { useCartStore } from "@/store/cart"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 
 const CATEGORIES = ["All Products", "Technology", "Fashion", "Home & Decor", "Beauty", "Sports"]
@@ -37,12 +40,13 @@ export default function StorefrontPage() {
         {/* Banner Section */}
         <section className="px-4 sm:px-6 mb-8 sm:mb-12">
           <div className="max-w-7xl mx-auto rounded-2xl sm:rounded-[32px] overflow-hidden relative min-h-[260px] sm:min-h-[340px] md:min-h-[400px] flex items-center p-6 sm:p-8 md:p-16">
-            <div className="absolute inset-0 z-0">
-               <img 
+            <div className="absolute inset-0 z-0 overflow-hidden">
+               <Image 
                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=2400" 
                  alt="Autumn Collection" 
-                 className="w-full h-full object-cover"
-                 loading="lazy"
+                 fill
+                 className="object-cover"
+                 priority
                />
                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
             </div>
@@ -98,11 +102,11 @@ export default function StorefrontPage() {
                 <Card key={product.id} className="border-none bg-transparent shadow-none group">
                   <CardContent className="p-0">
                     <div className="relative aspect-square rounded-2xl sm:rounded-3xl overflow-hidden bg-white shadow-lg sm:shadow-xl shadow-slate-200/50 mb-2 sm:mb-4 transition-all duration-300 group-hover:-translate-y-2">
-                      <img 
+                      <Image 
                         src={product.image} 
                         alt={product.name} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                        loading="lazy"
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110" 
                       />
                       <button className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 sm:p-2.5 bg-white/80 backdrop-blur-md rounded-full text-slate-400 hover:text-rose-500 active:text-rose-500 transition-colors shadow-lg">
                         <Heart size={16} className="sm:w-5 sm:h-5" />

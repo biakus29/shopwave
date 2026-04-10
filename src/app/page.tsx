@@ -1,6 +1,8 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
+export const dynamic = "force-dynamic"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
@@ -62,11 +64,14 @@ export default function LandingPage() {
             
             <div className="mt-12 sm:mt-20 relative animate-scale-in delay-300">
               <div className="absolute inset-0 bg-primary/5 rounded-3xl -rotate-2 scale-105 blur-xl -z-10" />
-              <img 
-                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2426" 
-                alt={t('common.dashboard')}
-                className="rounded-3xl border shadow-2xl mx-auto max-w-5xl w-full"
-              />
+              <div className="relative aspect-[16/10] max-w-5xl mx-auto rounded-3xl overflow-hidden border shadow-2xl">
+                <Image 
+                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2426" 
+                  alt={t('common.dashboard')}
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
         </section>

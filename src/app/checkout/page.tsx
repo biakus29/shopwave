@@ -7,7 +7,8 @@ import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { MessageCircle, Loader2, ArrowRight, ShieldCheck, ShoppingBag } from "lucide-react"
+import { MessageCircle, Loader2, ShieldCheck, ShoppingBag } from "lucide-react"
+import Image from "next/image"
 import { useCartStore } from "@/store/cart"
 import { generateWhatsAppUrl } from "@/lib/utils"
 
@@ -203,8 +204,13 @@ export default function CheckoutPage() {
                     {items.map((item) => (
                       <div key={item.product.id} className="flex justify-between items-center gap-4">
                         <div className="flex items-center gap-4">
-                           <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden border border-slate-200">
-                              <img src={item.product.images?.[0] || 'https://picsum.photos/seed/p1/200'} alt={item.product.name} className="w-full h-full object-cover" />
+                           <div className="w-14 h-14 rounded-xl bg-slate-100 relative overflow-hidden border border-slate-200">
+                              <Image 
+                                src={item.product.images?.[0] || 'https://picsum.photos/seed/p1/200'} 
+                                alt={item.product.name} 
+                                fill 
+                                className="object-cover" 
+                              />
                            </div>
                            <div>
                               <p className="text-sm font-bold truncate max-w-[150px]">{item.product.name}</p>

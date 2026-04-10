@@ -42,6 +42,7 @@ import {
 import { cn, formatCurrency } from "@/lib/utils"
 import { storage } from "@/lib/firebase/config"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
+import Image from "next/image"
 
 const CATEGORIES = ["Technology", "Fashion", "Home & Decor", "Beauty", "Sports", "Other"]
 
@@ -292,9 +293,14 @@ export default function ProductsPage() {
           return (
             <Card key={product.id} className="border-none shadow-xl shadow-slate-200/40 rounded-[28px] overflow-hidden group active:scale-[0.98] transition-all">
               <div className="flex p-3 gap-3">
-                <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden shrink-0 shadow-inner relative">
+                <div className="w-24 h-24 rounded-2xl bg-slate-100 relative overflow-hidden shrink-0 shadow-inner">
                   {product.images?.[0] ? (
-                      <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                      <Image 
+                        src={product.images[0]} 
+                        alt={product.name} 
+                        fill 
+                        className="object-cover" 
+                      />
                   ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-300">
                         <Package size={28} />
@@ -543,7 +549,12 @@ function ProductModal({ isOpen, onClose, formData, setFormData, onSave, isEdit }
                <div className="grid grid-cols-3 gap-3">
                   {formData.images.split(",").filter((s: string) => s.trim() !== "").map((url: string, i: number) => (
                     <div key={i} className="relative aspect-square rounded-2xl bg-slate-100 overflow-hidden shadow-sm">
-                       <img src={url.trim()} className="w-full h-full object-cover" alt="Product" />
+                       <Image 
+                         src={url.trim()} 
+                         alt="Product" 
+                         fill 
+                         className="object-cover" 
+                       />
                        <button 
                          type="button"
                          onClick={() => removeImage(i)}

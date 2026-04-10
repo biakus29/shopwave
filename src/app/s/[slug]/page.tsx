@@ -23,6 +23,7 @@ import {
   Loader2,
   ChevronRight
 } from "lucide-react"
+import Image from "next/image"
 import { cn, formatCurrency } from "@/lib/utils"
 import { useTranslation } from "@/hooks/use-translation"
 
@@ -131,9 +132,9 @@ export default function ShopCatalogPage() {
       
       <main className="flex-1 animate-fade-in">
         {/* Banner with Profile Overlay */}
-        <section className="relative h-64 sm:h-80 md:h-[400px] bg-slate-200">
+        <section className="relative h-64 sm:h-80 md:h-[400px] bg-slate-200 overflow-hidden">
            {shop.banner_url ? (
-             <img src={shop.banner_url} className="w-full h-full object-cover" alt={shop.name} />
+             <Image src={shop.banner_url} fill className="object-cover" alt={shop.name} priority />
            ) : (
              <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-primary/20" />
            )}
@@ -143,7 +144,7 @@ export default function ShopCatalogPage() {
               <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-8">
                  <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-[32px] bg-white border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden shrink-0 relative z-10 translate-y-4">
                     {shop.logo_url ? (
-                      <img src={shop.logo_url} className="w-full h-full object-cover" alt={shop.name} />
+                      <Image src={shop.logo_url} fill className="object-cover" alt={shop.name} />
                     ) : (
                       <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">
                         <Package size={48} />
@@ -224,10 +225,11 @@ export default function ShopCatalogPage() {
                 <Card key={product.id} className="border-none bg-transparent shadow-none group animate-fade-in">
                   <CardContent className="p-0">
                     <div className="relative aspect-square rounded-[32px] overflow-hidden bg-white shadow-xl shadow-slate-200/50 mb-4 transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl group-hover:shadow-primary/10">
-                      <img 
+                      <Image 
                         src={product.images[0] || "https://images.unsplash.com/photo-1591405351990-4726e331f141?auto=format&fit=crop&q=80&w=400"} 
                         alt={product.name} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110" 
                       />
                       <button className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-md rounded-2xl text-slate-400 hover:text-rose-500 active:scale-90 transition-all shadow-lg border border-white/50">
                         <Heart size={18} fill="currentColor" className="text-transparent hover:text-rose-500" />
